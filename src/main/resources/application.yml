@@ -16,8 +16,12 @@ spring:
       auto-index-creation: true
       authentication-database: admin
 
-#swagger:
-#  api:
-#    host: api.net-bundy.com/app
-#kafka:
-#  bootstrap-servers: "localhost:9092"
+openapi:
+  service:
+    title: GMS Multi Tenants
+    version: 1.0
+    description: IAM Service for GMS
+    url: http://127.0.0.1:8009
+    contact:
+      name: GMS Team
+      url: https://github.com/jesseballera/multi-tenant-mongodb
