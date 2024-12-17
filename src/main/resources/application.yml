@@ -1,0 +1,23 @@
+server:
+  port: 8009
+  forward-headers-strategy: framework
+  servlet:
+    contextPath: /
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/${spring.data.mongodb.database}?authSource=${spring.data.mongodb.authentication-database}&readPreference=primaryPreferred&directConnection=true
+      host: localhost
+      port: 27017
+      database: gms-tenants
+      username: root
+      password: root
+      auto-index-creation: true
+      authentication-database: admin
+
+#swagger:
+#  api:
+#    host: api.net-bundy.com/app
+#kafka:
+#  bootstrap-servers: "localhost:9092"
