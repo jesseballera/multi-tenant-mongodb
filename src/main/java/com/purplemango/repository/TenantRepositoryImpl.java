@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @BeforeGlobalMongoOperation
@@ -61,15 +62,22 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
     @Override
     public Tenant createOrUpdateTenant(Tenant tenant) {
         Query query = new Query().addCriteria(Criteria.where("_id").is(tenant.id()));
-        Update updateDefinition = new Update()
-                .set("companyName", tenant.companyName());
-        UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, Tenant.class);
+        Update updateDefinition = null;
         String id = null;
-        if (updateResult.getUpsertedId() != null)
-            id = tenant.id();
-        else
-            id = updateResult.getUpsertedId().toString();
-
-        return findById(id);
+//        if (tenant.id() != null) {
+//            updateDefinition = new Update()
+//                    .set("companyName", tenant.companyName())
+//                    .set("companyCode", tenant.companyCode());
+//            UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, Tenant.class);
+//            id = tenant.id();
+//        } else {
+            updateDefinition = new Update()
+//                    .set("id", UUID.randomUUID().toString())
+                    .set("companyName", tenant.companyName());
+//                    .set("companyCode", tenant.companyCode());
+            UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, Tenant.class);
+//            id = updateResult.getUpsertedId().toString();
+//        }
+        return findById(tenant.id());
     }
 }

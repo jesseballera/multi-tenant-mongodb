@@ -47,8 +47,11 @@ public class TenantController {
         return ResponseEntity.ok(tenant);
     }
 
-    @PostMapping("/create-update")
-    public ResponseEntity<?> createOrUpdateTenant(@RequestBody @Validated UpdateTenant entity) {
+    @PutMapping("/{tenant-id}")
+    public ResponseEntity<?> createOrUpdateTenant(@PathVariable("tenant-id") String tenantId, @RequestBody @Validated UpdateTenant entity) {
+        if (tenantId == null || tenantId.isEmpty() || !tenantId.equals(entity.id())) {
+            return ResponseEntity.badRequest().build();
+        }
         Tenant tenant = tenantService.createOrUpdateTenant(entity);
         return ResponseEntity.ok(tenant);
     }
