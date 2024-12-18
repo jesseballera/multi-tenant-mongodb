@@ -28,13 +28,15 @@ public class TenantUserServiceImpl implements TenantUserService {
     }
 
     @Override
-    public Collection<TenantUser> getAllTenantUsers() {
-        return List.of();
+    public Collection<TenantUser> getAllTenantUsers(String tenantId) {
+        Tenant tenant = tenantService.getTenantById(tenantId);
+        return tenantUserRepository.findAllUserByTenant(tenant.companyCode());
     }
 
     @Override
-    public Page<TenantUser> getAllTenantUsers(Pageable pageable) {
-        return null;
+    public Page<TenantUser> getAllTenantUsers(String tenantId,Pageable pageable) {
+        Tenant tenant = tenantService.getTenantById(tenantId);
+        return tenantUserRepository.findAll(tenant.companyCode(), pageable);
     }
 
     @Override

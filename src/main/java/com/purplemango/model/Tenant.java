@@ -24,6 +24,13 @@ public record Tenant(@MongoId String id,
                 .build();
     }
 
+    public static Tenant upsert(UpdateTenant entity) {
+        return Tenant.builder()
+                .id(entity.id())
+                .companyName(entity.companyName())
+                .build();
+    }
+
 //    public static class Builder {
 //        public Tenant build(AddTenant addTenant) {
 //            return Tenant.builder()

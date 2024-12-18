@@ -39,6 +39,7 @@ public class MongoBaseRepository<T>{
     public List<T> findAll(Class<T> typeClass, String collectionName) {
         return mongoTemplate.findAll(typeClass, collectionName);
     }
+
     public long count(Query query, Class<T> typeClass, String collectionName) {
         return mongoTemplate.count(query, typeClass, collectionName);
     }

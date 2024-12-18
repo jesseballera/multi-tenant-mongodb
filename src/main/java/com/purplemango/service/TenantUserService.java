@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public interface TenantUserService {
 
-    Collection<TenantUser> getAllTenantUsers();
-    Page <TenantUser> getAllTenantUsers(Pageable pageable);
+    Collection<TenantUser> getAllTenantUsers(String tenantId);
+    Page <TenantUser> getAllTenantUsers(String tenantId, Pageable pageable);
     List<TenantUser> getTenantUsersByTenantId(final String tenantId);
     TenantUser getUserById(final String tenantId);
     TenantUser createTenantUser(final AddTenantUser tenant);

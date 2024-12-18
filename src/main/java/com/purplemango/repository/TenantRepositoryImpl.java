@@ -1,13 +1,18 @@
 package com.purplemango.repository;
 
+import com.mongodb.client.result.UpdateResult;
 import com.purplemango.aop.operations.BeforeGlobalMongoOperation;
 import com.purplemango.config.MultiTenantMongoDBFactory;
+import com.purplemango.model.AddTenant;
 import com.purplemango.model.Tenant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.UpdateDefinition;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -19,9 +24,11 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
 
     public static final String COLLECTION_NAME = "tenants";
     public static final String DATABASE_NAME = "gms-tenants";
+    private final MongoTemplate mongoTemplate;
 
-    public TenantRepositoryImpl() {
+    public TenantRepositoryImpl(MongoTemplate mongoTemplate) {
         super.setDatabaseName(DATABASE_NAME);
+        this.mongoTemplate = mongoTemplate;
     }
     @Override
     public Tenant findByCompanyNameAndCompanyCode(String companyName, String companyCode) {
@@ -30,12 +37,14 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
 
     @Override
     public Collection<Tenant> findAll() {
-        return List.of();
+        return mongoTemplate.findAll(Tenant.class, COLLECTION_NAME);
     }
 
     @Override
     public Page<Tenant> findAll(Pageable pageable) {
-        return null;
+        Query query = new Query().with(pageable).with(pageable.getSort());
+        List<Tenant> filteredTenants = mongoTemplate.find(query, Tenant.class, COLLECTION_NAME);
+        return PageableExecutionUtils.getPage( filteredTenants, pageable, () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Tenant.class));
     }
 
     @Override
@@ -47,5 +56,20 @@ public class TenantRepositoryImpl extends MongoBaseRepository<Tenant> implements
     @Override
     public Tenant save(Tenant tenant) {
        return save(tenant, COLLECTION_NAME);
+    }
+
+    @Override
+    public Tenant createOrUpdateTenant(Tenant tenant) {
+        Query query = new Query().addCriteria(Criteria.where("_id").is(tenant.id()));
+        Update updateDefinition = new Update()
+                .set("companyName", tenant.companyName());
+        UpdateResult updateResult = mongoTemplate.upsert(query, updateDefinition, Tenant.class);
+        String id = null;
+        if (updateResult.getUpsertedId() != null)
+            id = tenant.id();
+        else
+            id = updateResult.getUpsertedId().toString();
+
+        return findById(id);
     }
 }

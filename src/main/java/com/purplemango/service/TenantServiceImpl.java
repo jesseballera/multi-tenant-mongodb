@@ -3,6 +3,7 @@ package com.purplemango.service;
 import com.purplemango.exception.TenantDuplicateException;
 import com.purplemango.model.AddTenant;
 import com.purplemango.model.Tenant;
+import com.purplemango.model.UpdateTenant;
 import com.purplemango.repository.TenantRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,5 +52,10 @@ public class TenantServiceImpl implements TenantService {
         }
 
         return tenantRepository.save(Tenant.build(entity));
+    }
+
+    @Override
+    public Tenant createOrUpdateTenant(UpdateTenant tenant) {
+        return tenantRepository.createOrUpdateTenant(Tenant.upsert(tenant));
     }
 }

@@ -8,6 +8,7 @@ import com.purplemango.service.TenantService;
 import com.purplemango.service.TenantUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,26 @@ public class TenantUserController {
         this.tenantUserService = tenantUserService;
     }
 
-//    @GetMapping
-//    public  ResponseEntity<?> getAllTenants() { return ResponseEntity.ok(tenantService.getAllTenants()); }
-//
-//    @GetMapping("/page")
-//    public ResponseEntity<?> getAllTenants(@RequestParam int page, @RequestParam int size) {
-//        return ResponseEntity.ok(tenantService.getAllTenants(PageRequest.of(page, size)));
-//    }
-//
+    @GetMapping("/{tenant-id}/all")
+    public  ResponseEntity<?> getAllTenantUsers(@PathVariable("tenant-id") String tenantId) {
+        if (tenantId == null || tenantId.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(tenantUserService.getAllTenantUsers(tenantId));
+    }
+
+    @GetMapping("/{tenant-id}")
+    public ResponseEntity<?> getAllTenants(@PathVariable("tenant-id") String tenant,
+                                           @RequestParam(required = true) int page,
+                                           @RequestParam(required = true) int size,
+                                           @RequestParam(required = true, value = "q") String  sort,
+                                           @RequestParam(required = true) Sort.Direction direction) {
+        if (page < 0 || size < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(tenantUserService.getAllTenantUsers(tenant, PageRequest.of(page, size, Sort.by(direction, sort))));
+    }
+
 //    @GetMapping("/{tenantId}")
 //    public ResponseEntity<?> getTenantById(@PathVariable UUID tenantId) {
 //        return ResponseEntity.ok(tenantService.getTenantById(tenantId));
